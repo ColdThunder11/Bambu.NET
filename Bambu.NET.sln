@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bambu.NET", "Bambu.NET\Bambu.NET.csproj", "{46EACF3D-28A5-40C9-8DBF-8A4C077D2351}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bambu.NetExample", "Bambu.NetExample\Bambu.NetExample.csproj", "{A379E760-58D5-4863-853E-3BC7154DEC47}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{46EACF3D-28A5-40C9-8DBF-8A4C077D2351}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46EACF3D-28A5-40C9-8DBF-8A4C077D2351}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46EACF3D-28A5-40C9-8DBF-8A4C077D2351}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46EACF3D-28A5-40C9-8DBF-8A4C077D2351}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A379E760-58D5-4863-853E-3BC7154DEC47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A379E760-58D5-4863-853E-3BC7154DEC47}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A379E760-58D5-4863-853E-3BC7154DEC47}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A379E760-58D5-4863-853E-3BC7154DEC47}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
