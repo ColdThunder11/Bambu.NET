@@ -9,5 +9,5 @@ public class BambuPrinter
     public string DevModelName;
     public string DevProductName;
     public string DevAccessCode;
-    public string NozzleDiameter;
+    public float NozzleDiameter;
 }

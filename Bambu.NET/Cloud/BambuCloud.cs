@@ -14,6 +14,7 @@ public class BambuCloud
     private string account;
     private string password;
     private string accessToken;
+    public string AccessToken => accessToken;
     
     public BambuCloud(string account, string password, bool isChinaRegion)
     {
@@ -51,6 +52,19 @@ public class BambuCloud
             deviceList.Add(device);
         }
         return deviceList;
+    }
+
+    public List<BambuTask> GetTaskList()
+    {
+        var result = RequestAsync<JObject>("v1/user-service/my/tasks").Result;
+        var taskListJArray = result["hits"].ToObject<JArray>();
+        var taskList = new List<BambuTask>();
+        foreach (var taskJo in taskListJArray)
+        {
+            var task = FieldNameCast.BambuJson2Model<BambuTask>(taskJo.ToObject<JObject>());
+            taskList.Add(task);
+        }
+        return taskList;
     }
     
     public string GetUserName()
