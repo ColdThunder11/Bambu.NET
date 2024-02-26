@@ -31,19 +31,24 @@ public class BambuCloud
 
     public void Login()
     {
+        LoginAsync().Wait();
+    }
+
+    public async Task LoginAsync()
+    {
         var loginData = new Dictionary<string, string>()
         {
             { "account", account },
             { "password", password }
         };
-        var result = RequestAsync<JObject>("v1/user-service/user/login", loginData).Result;
+        var result = await RequestAsync<JObject>("v1/user-service/user/login", loginData);
         var token = result["accessToken"].ToString();
         accessToken = token;
     }
 
-    public List<BambuPrinter> GetDeviceList()
+    public async Task<List<BambuPrinter>> GetDeviceListAsync()
     {
-        var result = RequestAsync<JObject>("v1/iot-service/api/user/bind").Result;
+        var result = await RequestAsync<JObject>("v1/iot-service/api/user/bind");
         var deviceListJArray = result["devices"].ToObject<JArray>();
         var deviceList = new List<BambuPrinter>();
         foreach (var deviceJo in deviceListJArray)
@@ -53,10 +58,14 @@ public class BambuCloud
         }
         return deviceList;
     }
-
-    public List<BambuTask> GetTaskList()
+    public List<BambuPrinter> GetDeviceList()
     {
-        var result = RequestAsync<JObject>("v1/user-service/my/tasks").Result;
+        return GetDeviceListAsync().Result;
+    }
+
+    public async Task<List<BambuTask>> GetTaskListAsync()
+    {
+        var result = await RequestAsync<JObject>("v1/user-service/my/tasks");
         var taskListJArray = result["hits"].ToObject<JArray>();
         var taskList = new List<BambuTask>();
         foreach (var taskJo in taskListJArray)
@@ -65,6 +74,11 @@ public class BambuCloud
             taskList.Add(task);
         }
         return taskList;
+    }
+
+    public List<BambuTask> GetTaskList()
+    {
+        return GetTaskListAsync().Result;
     }
     
     public string GetUserName()
