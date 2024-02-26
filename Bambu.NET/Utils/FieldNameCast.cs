@@ -139,7 +139,7 @@ public class FieldNameCast
             {
                 if (field.FieldType == typeof(string))
                 {
-                    field.SetValue(t, kv.Value);
+                    field.SetValue(t, kv.Value.ToString());
                 }
                 else if (field.FieldType == typeof(bool))
                 {

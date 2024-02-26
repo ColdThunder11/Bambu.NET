@@ -13,7 +13,7 @@ public class BambuTask
     public int FeedbackStatus;
     public DateTime StartTime;
     public DateTime EndTime;
-    public float Weight;
+    public string Weight;
     public int Length;
     public int CostTime;
     public int ProfileId;
