@@ -12,6 +12,8 @@ public class BambuClient
     private List<BambuPrinter> _deviceListCache;
 
     private string mqttHost;
+
+    public string AccessToken => _bambuCloud.AccessToken;
     
     public BambuClient(string account, string password, bool isChinaRegion)
     {
@@ -35,8 +37,17 @@ public class BambuClient
         return _deviceListCache.Select(x=>x).ToList();
     }
 
-    public async Task SubscribeReport(string serial, Action<string> callback)
+    public BambuMQTTClient GetMqttClient(BambuPrinter printer)
     {
+        return GetMqttClient(printer.DevId);
+    }
+
+    public BambuMQTTClient GetMqttClient(string serial)
+    {
+        if (_deviceListCache.Select(x => x.DevId == serial).Count() == 0)
+        {
+            return null;
+        }
         if (!_bambuMqttClient.ContainsKey(serial))
         {
             var mqtt = new BambuMQTTClient(mqttHost, 8883, _bambuCloud.GetUserName(),
@@ -44,7 +55,17 @@ public class BambuClient
             _bambuMqttClient.Add(serial,mqtt);
         }
 
-        var mqttClient = _bambuMqttClient[serial];
+        return _bambuMqttClient[serial];
+    }
+
+    public async Task SubscribeReport(BambuPrinter printer, Action<string> callback)
+    {
+        await SubscribeReport(printer.DevId, callback);
+    }
+
+    public async Task SubscribeReport(string serial, Action<string> callback)
+    {
+        var mqttClient = GetMqttClient(serial);
         if(!mqttClient.Connected) await mqttClient.Connect();
         await mqttClient.Subscribe(callback);
     }

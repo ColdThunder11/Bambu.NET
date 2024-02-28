@@ -1,7 +1,11 @@
 using System.Security.Authentication;
 using System.Text;
+using Bambu.NET.Models;
+using Bambu.NET.Utils;
 using MQTTnet;
 using MQTTnet.Client;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Bambu.NET.MQTT;
 
@@ -12,16 +16,26 @@ public class BambuMQTTClient : IDisposable
     private string _userName;
     private string _password;
     private string _serial;
-    private bool _connected;
 
     private Action<string> _reportCallback;
 
     private MqttFactory _mqttFactory;
     private IMqttClient _mqttClient;
+    private BambuPrinterStatus _status;
 
-    public bool Connected => _connected;
-    
-    
+    public bool Connected => _mqttClient.IsConnected;
+
+    public BambuPrinterStatus Status
+    {
+        get
+        {
+            if (_status == null) return null;
+            lock (_status)
+            {
+                return (BambuPrinterStatus) _status.Clone();
+            }
+        }
+    }
     
     public BambuMQTTClient(string host, int port, string userName, string password, string serial)
     {
@@ -30,12 +44,12 @@ public class BambuMQTTClient : IDisposable
         this._userName = userName;
         this._password = password;
         this._serial = serial;
+        _mqttFactory = new MqttFactory();
+        _mqttClient = _mqttFactory.CreateMqttClient();
     }
 
     public async Task Connect()
     {
-        _mqttFactory = new MqttFactory();
-        _mqttClient = _mqttFactory.CreateMqttClient();
         var mqttClientOptions = new MqttClientOptionsBuilder().WithTcpServer(_host, _port)
             .WithTlsOptions(o =>
             {
@@ -67,12 +81,62 @@ public class BambuMQTTClient : IDisposable
 
     private void ProcessDeviceReport(string payload)
     {
+        //Update status
+        var payloadJo = JsonConvert.DeserializeObject<JObject>(payload);
+        if (payloadJo.ContainsKey("print"))
+        {
+            var printJo = payloadJo["print"].ToObject<JObject>();
+            if (_status == null)
+            {
+                _status = FieldNameCast.BambuJson2Model<BambuPrinterStatus>(printJo);
+            }
+            else
+            {
+                lock (_status)
+                {
+                    _status = FieldNameCast.UpdateBambuJson2Model<BambuPrinterStatus>(printJo, _status);
+                }
+            }
+        }
         if (_reportCallback != null)
         {
             _reportCallback(payload);
         }
     }
+
+    /// <summary>
+    /// Pause current task
+    /// </summary>
+    public async Task Pause()
+    {
+        await Publish("{\"print\": {\"sequence_id\": \"0\", \"command\": \"pause\"}}");
+    }
     
+    /// <summary>
+    /// Stop current task
+    /// </summary>
+    public async Task Stop()
+    {
+        await Publish("{\"print\": {\"sequence_id\": \"0\", \"command\": \"stop\"}}");
+    }
+    
+    /// <summary>
+    /// Resume current task
+    /// </summary>
+    public async Task Resume()
+    {
+        await Publish("{\"print\": {\"sequence_id\": \"0\", \"command\": \"resume\"}}");
+    }
+
+    public async Task CameraLightOn()
+    {
+        await Publish("{\"system\": {\"sequence_id\": \"0\", \"command\": \"ledctrl\", \"led_node\": \"chamber_light\", \"led_mode\": \"on\",\"led_on_time\": 500, \"led_off_time\": 500, \"loop_times\": 0, \"interval_time\": 0}}");
+    }
+    
+    public async Task CameraLightOff()
+    {
+        await Publish("{\"system\": {\"sequence_id\": \"0\", \"command\": \"ledctrl\", \"led_node\": \"chamber_light\", \"led_mode\": \"off\",\"led_on_time\": 500, \"led_off_time\": 500, \"loop_times\": 0, \"interval_time\": 0}}");
+    }
 
     public async Task Subscribe(Action<string> callback)
     {
@@ -102,7 +166,6 @@ public class BambuMQTTClient : IDisposable
     public async Task Disconnect()
     {
         var mqttClientDisconnectOptions = _mqttFactory.CreateClientDisconnectOptionsBuilder().Build();
-
         await _mqttClient.DisconnectAsync(mqttClientDisconnectOptions, CancellationToken.None);
     }
 
@@ -110,6 +173,10 @@ public class BambuMQTTClient : IDisposable
     {
         if (_mqttClient != null)
         {
+            if (_mqttClient.IsConnected)
+            {
+                _mqttClient.DisconnectAsync().Wait();
+            }
             _mqttClient.Dispose();
         }
     }
