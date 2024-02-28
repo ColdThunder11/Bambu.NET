@@ -10,23 +10,23 @@ namespace Bambu.NET.Cloud;
 
 public class BambuCloud
 {
-    private bool isChinaRegion = true;
-    private string account;
-    private string password;
-    private string accessToken;
-    public string AccessToken => accessToken;
+    private bool _isChinaRegion = true;
+    private string _account;
+    private string _password;
+    private string _accessToken;
+    public string AccessToken => _accessToken;
     
     public BambuCloud(string account, string password, bool isChinaRegion)
     {
-        this.account = account;
-        this.password = password;
-        this.isChinaRegion = isChinaRegion;
+        this._account = account;
+        this._password = password;
+        this._isChinaRegion = isChinaRegion;
     }
     
     public BambuCloud(string account, string password, string accessToken, bool isChinaRegion):
         this(account,password,isChinaRegion)
     {
-        this.accessToken = accessToken;
+        this._accessToken = accessToken;
     }
 
     public void Login()
@@ -38,12 +38,12 @@ public class BambuCloud
     {
         var loginData = new Dictionary<string, string>()
         {
-            { "account", account },
-            { "password", password }
+            { "account", _account },
+            { "password", _password }
         };
         var result = await RequestAsync<JObject>("v1/user-service/user/login", loginData);
         var token = result["accessToken"].ToString();
-        accessToken = token;
+        _accessToken = token;
     }
 
     public async Task<List<BambuPrinter>> GetDeviceListAsync()
@@ -83,7 +83,7 @@ public class BambuCloud
     
     public string GetUserName()
     {
-        var b64Str = accessToken.Split(".")[1];
+        var b64Str = _accessToken.Split(".")[1];
         b64Str = b64Str.PadRight((4 - b64Str.Length % 4) % 4, '=');
         var b64Bytes = Convert.FromBase64String(b64Str);
         var jsonStr = Encoding.UTF8.GetString(b64Bytes);
@@ -96,10 +96,10 @@ public class BambuCloud
         var json = JsonConvert.SerializeObject(data);
         var url = GetApiUrl(apiEndpoint);
         HttpClient client = new HttpClient();
-        if (accessToken != null)
+        if (_accessToken != null)
         {
             client.DefaultRequestHeaders.TryAddWithoutValidation(
-                "Authorization",$"Bearer {accessToken}");
+                "Authorization",$"Bearer {_accessToken}");
         }
 
         HttpResponseMessage result;
@@ -122,7 +122,7 @@ public class BambuCloud
 
     private string GetApiUrl(string apiPath)
     {
-        if (isChinaRegion) return $"https://api.bambulab.cn/{apiPath}";
+        if (_isChinaRegion) return $"https://api.bambulab.cn/{apiPath}";
         return $"https://api.bambulab.com/{apiPath}";
     }
 }
