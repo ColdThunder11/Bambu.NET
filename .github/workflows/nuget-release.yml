@@ -22,9 +22,10 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore
-    - name: Pack
-      run: dotnet pack --configuration Release
-    - name: Publish
-      run: dotnet nuget push ./bin/Release/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
+    - name: Pack & Publish
+      run: |
+        cd Bambu.NET
+        dotnet pack --configuration Release
+        dotnet nuget push ./bin/Release/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
 #    - name: Test
 #      run: dotnet test --no-build --verbosity normal
