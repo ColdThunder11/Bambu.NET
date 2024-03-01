@@ -4,11 +4,22 @@
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <PackageId>Bambu.NET</PackageId>
+        <Version>0.1.2</Version>
+        <Authors>ColdThunder11</Authors>
+        <Company>ColdThunder11</Company>
+        <PackRelease>true</PackRelease>
+        <PublishRelease>true</PublishRelease>
+        <Title>Bambu.NET</Title>
+        <PackageLicenseUrl>https://github.com/ColdThunder11/Bambu.NET/blob/master/LICENSE</PackageLicenseUrl>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <RepositoryUrl>https://github.com/ColdThunder11/Bambu.NET</RepositoryUrl>
     </PropertyGroup>
 
     <ItemGroup>
       <PackageReference Include="MQTTnet" Version="4.3.3.952" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+      <None Include="..\README.md" Pack="true" PackagePath="\"/>
     </ItemGroup>
 
 </Project>

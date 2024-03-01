@@ -11,15 +11,26 @@ public class BambuClient
 
     private List<BambuPrinter> _deviceListCache;
 
-    private string mqttHost;
+    private string _mqttHost;
+    private bool _isChinaRegion;
 
     public string AccessToken => _bambuCloud.AccessToken;
+
+    private BambuClient(bool isChinaRegion)
+    {
+        _isChinaRegion = isChinaRegion;
+        if (isChinaRegion) _mqttHost = "cn.mqtt.bambulab.com";
+        else _mqttHost = "us.mqtt.bambulab.com";
+    }
     
-    public BambuClient(string account, string password, bool isChinaRegion)
+    public BambuClient(string account, string password, bool isChinaRegion) : this(isChinaRegion)
     {
         _bambuCloud = new BambuCloud(account, password, isChinaRegion);
-        if (isChinaRegion) mqttHost = "cn.mqtt.bambulab.com";
-        else mqttHost = "us.mqtt.bambulab.com";
+    }
+    
+    public BambuClient(string account, string password, string accessToken,  bool isChinaRegion) : this(isChinaRegion)
+    {
+        _bambuCloud = new BambuCloud(account, password, accessToken, isChinaRegion);
     }
 
     /// <summary>
@@ -50,7 +61,7 @@ public class BambuClient
         }
         if (!_bambuMqttClient.ContainsKey(serial))
         {
-            var mqtt = new BambuMQTTClient(mqttHost, 8883, _bambuCloud.GetUserName(),
+            var mqtt = new BambuMQTTClient(_mqttHost, 8883, _bambuCloud.GetUserName(),
                 _bambuCloud.AccessToken, serial);
             _bambuMqttClient.Add(serial,mqtt);
         }

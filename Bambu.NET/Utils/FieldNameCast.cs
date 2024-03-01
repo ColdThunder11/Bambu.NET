@@ -48,9 +48,37 @@ public class FieldNameCast
     /// <exception cref="Exception"></exception>
     private static Object BambuJson2Model(Type type, JToken jtoken)
     {
+        if (type == typeof(object))
+        {
+            return (object) jtoken;
+        }
+        if (type == typeof(string))
+        {
+            return jtoken.ToObject<string>();
+        }
+        else if (type == typeof(bool))
+        {
+            return jtoken.ToObject<bool>();
+        }
+        else if (type == typeof(int))
+        {
+            return jtoken.ToObject<int>();
+        }
+        else if (type == typeof(long))
+        {
+            return jtoken.ToObject<long>();
+        }
+        else if (type == typeof(float))
+        {
+            return jtoken.ToObject<float>();
+        }
+        else if (type == typeof(double))
+        {
+            return jtoken.ToObject<double>();
+        }
         var jDict = jtoken.ToObject<Dictionary<string, Object>>();
         var t = Activator.CreateInstance(type);
-                foreach (var kv in jDict)
+        foreach (var kv in jDict)
         {
             var key = BambuJson2CsPublic(kv.Key);
             var field = type.GetField(key);

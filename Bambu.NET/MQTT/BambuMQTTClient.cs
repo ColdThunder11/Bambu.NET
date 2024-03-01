@@ -22,6 +22,7 @@ public class BambuMQTTClient : IDisposable
     private MqttFactory _mqttFactory;
     private IMqttClient _mqttClient;
     private BambuPrinterStatus _status;
+    private BambuVersionInfo _version;
 
     public bool Connected => _mqttClient.IsConnected;
 
@@ -36,6 +37,8 @@ public class BambuMQTTClient : IDisposable
             }
         }
     }
+
+    public BambuVersionInfo VersionInfo => _version;
     
     public BambuMQTTClient(string host, int port, string userName, string password, string serial)
     {
@@ -98,6 +101,11 @@ public class BambuMQTTClient : IDisposable
                 }
             }
         }
+        if (payloadJo.ContainsKey("info"))
+        {
+            var versionJo = payloadJo["print"].ToObject<JObject>();
+            _version = FieldNameCast.BambuJson2Model<BambuVersionInfo>(versionJo);
+        }
         if (_reportCallback != null)
         {
             _reportCallback(payload);
@@ -128,11 +136,17 @@ public class BambuMQTTClient : IDisposable
         await Publish("{\"print\": {\"sequence_id\": \"0\", \"command\": \"resume\"}}");
     }
 
+    /// <summary>
+    /// Turn on camera light
+    /// </summary>
     public async Task CameraLightOn()
     {
         await Publish("{\"system\": {\"sequence_id\": \"0\", \"command\": \"ledctrl\", \"led_node\": \"chamber_light\", \"led_mode\": \"on\",\"led_on_time\": 500, \"led_off_time\": 500, \"loop_times\": 0, \"interval_time\": 0}}");
     }
     
+    /// <summary>
+    /// Turn off camera light
+    /// </summary>
     public async Task CameraLightOff()
     {
         await Publish("{\"system\": {\"sequence_id\": \"0\", \"command\": \"ledctrl\", \"led_node\": \"chamber_light\", \"led_mode\": \"off\",\"led_on_time\": 500, \"led_off_time\": 500, \"loop_times\": 0, \"interval_time\": 0}}");
