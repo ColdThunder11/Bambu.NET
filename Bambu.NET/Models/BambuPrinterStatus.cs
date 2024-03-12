@@ -39,7 +39,7 @@ public class BambuPrinterStatus : ICloneable
     public string SubtaskName;
     public string GcodeFile;
     public List<int> Stg;
-    public int StgCur;
+    public StageCursor StgCur;
     public string PrintType;
     public int HomeFlag;
     public string McPrintLineNumber;

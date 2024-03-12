@@ -108,6 +108,11 @@ public class FieldNameCast
                 {
                     field.SetValue(t, float.Parse(kv.Value.ToString()));
                 }
+                else if (field.FieldType.IsEnum)
+                {
+                    var enmuParsed = Enum.Parse(field.FieldType, kv.Value.ToString());
+                    field.SetValue(t, enmuParsed);
+                }
                 else if (kv.Value.GetType() == typeof(JToken))
                 {
                     var item = BambuJson2Model(field.FieldType, (JToken)kv.Value);
@@ -194,6 +199,11 @@ public class FieldNameCast
                 else if (field.FieldType == typeof(double))
                 {
                     field.SetValue(t, float.Parse(kv.Value.ToString()));
+                }
+                else if (field.FieldType.IsEnum)
+                {
+                    var enmuParsed = Enum.Parse(field.FieldType, kv.Value.ToString());
+                    field.SetValue(t, enmuParsed);
                 }
                 else if (kv.Value.GetType() == typeof(JToken))
                 {

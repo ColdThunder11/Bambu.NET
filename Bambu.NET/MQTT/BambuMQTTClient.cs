@@ -103,7 +103,7 @@ public class BambuMQTTClient : IDisposable
         }
         if (payloadJo.ContainsKey("info"))
         {
-            var versionJo = payloadJo["print"].ToObject<JObject>();
+            var versionJo = payloadJo["info"].ToObject<JObject>();
             _version = FieldNameCast.BambuJson2Model<BambuVersionInfo>(versionJo);
         }
         if (_reportCallback != null)
