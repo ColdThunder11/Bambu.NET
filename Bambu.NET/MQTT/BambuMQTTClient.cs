@@ -6,6 +6,7 @@ using MQTTnet;
 using MQTTnet.Client;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 
 namespace Bambu.NET.MQTT;
 
@@ -25,6 +26,23 @@ public class BambuMQTTClient : IDisposable
     private BambuVersionInfo _version;
 
     public bool Connected => _mqttClient.IsConnected;
+
+    private static DefaultContractResolver _snakeCaseNameContractResolver;
+
+    private static JsonSerializerSettings _snakeCaseNameSetting;
+
+    static BambuMQTTClient()
+    {
+        _snakeCaseNameContractResolver = new DefaultContractResolver
+        {
+            NamingStrategy = new SnakeCaseNamingStrategy()
+        };
+        _snakeCaseNameSetting = new JsonSerializerSettings()
+        {
+            ContractResolver = _snakeCaseNameContractResolver,
+            Formatting = Formatting.None
+        };
+    }
 
     public BambuPrinterStatus Status
     {
@@ -151,7 +169,95 @@ public class BambuMQTTClient : IDisposable
     {
         await Publish("{\"system\": {\"sequence_id\": \"0\", \"command\": \"ledctrl\", \"led_node\": \"chamber_light\", \"led_mode\": \"off\",\"led_on_time\": 500, \"led_off_time\": 500, \"loop_times\": 0, \"interval_time\": 0}}");
     }
-
+    
+    /// <summary>
+    /// Tells printer to perform a filament change using AMS.
+    /// </summary>
+    /// <param name="filamentTrayId">ID of filament tray</param>
+    /// <param name="currentTemp">Old print temperature</param>
+    /// <param name="newTemp">New print temperature</param>
+    public async Task AmsChangeFilament(int filamentTrayId, int currentTemp, int newTemp)
+    {
+        var data = new AmsChangeFilamentData()
+        {
+            SequenceId = "0",
+            Command = "ams_change_filament",
+            Target = filamentTrayId,
+            CurrTemp = currentTemp,
+            TarTemp = newTemp
+        };
+        var dataJson = JsonConvert.SerializeObject(data, _snakeCaseNameSetting);
+        await Publish($"{{\"print\": {dataJson}}}");
+    }
+    
+    /// <summary>
+    /// Changes the setting of the given filament in the given AMS.
+    /// </summary>
+    /// <param name="amsId">Index of the AMS</param>
+    /// <param name="trayId">Index of the tray</param>
+    /// <param name="trayColor">Formatted as hex RRGGBBAA (alpha is always FF)</param>
+    /// <param name="nozzleTempMin">Minimum nozzle temp for filament (in C)</param>
+    /// <param name="nozzleTempMax">Maximum nozzle temp for filament (in C)</param>
+    /// <param name="trayType">Type of filament, such as "PLA" or "ABS"</param>
+    public async Task AmsFilamentSetting(int amsId, int trayId, string trayColor, int nozzleTempMin, int nozzleTempMax, string trayType)
+    {
+        var data = new AmsFilamentSettingData()
+        {
+            SequenceId = "0",
+            Command = "ams_filament_setting",
+            AmsId = amsId,
+            TrayId = trayId,
+            TrayInfoIdx = "",
+            TrayColor = trayColor,
+            NozzleTempMin = nozzleTempMin,
+            NozzleTempMax = nozzleTempMax,
+            TrayType = trayType
+        };
+        var dataJson = JsonConvert.SerializeObject(data, _snakeCaseNameSetting);
+        await Publish($"{{\"print\": {dataJson}}}");
+    }
+    /// <summary>
+    /// Set print speed to one of the 4 presets.
+    /// </summary>
+    /// <param name="speed">1 = silent, 2 = standard, 3 = sport, 4 = ludicrous</param>
+    public async Task SetPrintSpeed(int speed)
+    {
+        await Publish($"{{\"print\": {{\"sequence_id\": \"0\", \"command\": \"print_speed\", \"param\": \"{speed}\"}}}}");
+    }
+    
+    /// <summary>
+    /// Print a gcode file. This takes absolute paths.
+    /// </summary>
+    /// <param name="filename">Filename (on the printer's filesystem) to print</param>
+    public async Task PrintGcodeFile(string filename)
+    {
+        await Publish($"{{\"print\": {{\"sequence_id\": \"0\", \"command\": \"gcode_file\", \"param\": \"{filename}\"}}}}");
+    }
+    /// <summary>
+    /// Send raw GCode to the printer.
+    /// </summary>
+    /// <param name="gcode">Gcode to execute, can use \n for multiple lines</param>
+    /// <param name="userId">Optional</param>
+    public async Task SendGcode(string gcode ,string? userId = null)
+    {
+        if (userId == null)
+        {
+            await Publish($"{{\"print\": {{\"sequence_id\": \"0\", \"command\": \"gcode_line\", \"param\": \"{gcode}\"}}}}");
+        }
+        else
+        {
+            await Publish($"{{\"print\": {{\"sequence_id\": \"0\", \"command\": \"gcode_line\", \"param\": \"{gcode}\", \"user_id\": \"{userId}\"}}}}");
+        }
+    }
+    
+    /// <summary>
+    /// Starts calibration process.
+    /// </summary>
+    public async Task Calibration()
+    {
+        await Publish("{\"print\": {\"sequence_id\": \"0\", \"command\": \"calibration\"}}");
+    }
+    
     public async Task Subscribe(Action<string> callback)
     {
         _reportCallback = callback;
@@ -175,6 +281,11 @@ public class BambuMQTTClient : IDisposable
             .Build();
         var result = await _mqttClient.PublishAsync(applicationMessage, CancellationToken.None);
         return result.IsSuccess;
+    }
+    
+    public async Task<bool> Publish(Object jsonObject)
+    {
+        return await Publish(JsonConvert.SerializeObject(jsonObject));
     }
 
     public async Task Disconnect()

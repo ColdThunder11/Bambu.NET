@@ -1,4 +1,6 @@
 using System.Text;
+using System.Text.RegularExpressions;
+using System.Xml.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -160,8 +162,7 @@ public class FieldNameCast
         }
         return t;
     }
-
-
+    
     public static T BambuJson2Model<T>(string json) where T : new()
     {
         return BambuJson2Model<T>(JsonConvert.DeserializeObject<JObject>(json));
