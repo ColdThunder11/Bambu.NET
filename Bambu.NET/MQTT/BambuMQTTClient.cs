@@ -26,21 +26,29 @@ public class BambuMQTTClient : IDisposable
     private BambuVersionInfo _version;
 
     public bool Connected => _mqttClient.IsConnected;
-
-    private static DefaultContractResolver _snakeCaseNameContractResolver;
-
+    
     private static JsonSerializerSettings _snakeCaseNameSetting;
+
+    private static JsonSerializerSettings _camelCaseNameSetting;
 
     static BambuMQTTClient()
     {
-        _snakeCaseNameContractResolver = new DefaultContractResolver
+        var snakeCaseNameContractResolver = new DefaultContractResolver
         {
             NamingStrategy = new SnakeCaseNamingStrategy()
         };
         _snakeCaseNameSetting = new JsonSerializerSettings()
         {
-            ContractResolver = _snakeCaseNameContractResolver,
+            ContractResolver = snakeCaseNameContractResolver,
             Formatting = Formatting.None
+        };
+        var camelCaseNameContractResolver = new DefaultContractResolver()
+        {
+            NamingStrategy = new CamelCaseNamingStrategy()
+        };
+        _camelCaseNameSetting = new()
+        {
+            ContractResolver = camelCaseNameContractResolver
         };
     }
 
@@ -207,7 +215,7 @@ public class BambuMQTTClient : IDisposable
             Command = "ams_filament_setting",
             AmsId = amsId,
             TrayId = trayId,
-            TrayInfoIdx = "",
+            TrayInfoIdx = "GFL99",
             TrayColor = trayColor,
             NozzleTempMin = nozzleTempMin,
             NozzleTempMax = nozzleTempMax,
