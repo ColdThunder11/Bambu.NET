@@ -307,6 +307,19 @@ public class FieldNameCast
                         field.SetValue(t, item);
                     }
                 }
+                else if (kv.Value.GetType() == typeof(JObject))
+                {
+                    if (field.GetValue(t) != null)
+                    {
+                        var item = UpdateBambuJson2Model(field.FieldType, ((JObject)kv.Value).ToObject<JToken>(), field.GetValue(t));
+                        field.SetValue(t, item);
+                    }
+                    else
+                    {
+                        var item = BambuJson2Model(field.FieldType, ((JObject)kv.Value).ToObject<JToken>());
+                        field.SetValue(t, item);
+                    }
+                }
                 else if (kv.Value.GetType() == typeof(JArray))
                 {
                     var fieldType = field.FieldType;
@@ -394,6 +407,19 @@ public class FieldNameCast
                     else
                     {
                         var item = BambuJson2Model(field.FieldType, (JToken)kv.Value);
+                        field.SetValue(t, item);
+                    }
+                }
+                else if (kv.Value.GetType() == typeof(JObject))
+                {
+                    if (field.GetValue(t) != null)
+                    {
+                        var item = UpdateBambuJson2Model(field.FieldType, ((JObject)kv.Value).ToObject<JToken>(), field.GetValue(t));
+                        field.SetValue(t, item);
+                    }
+                    else
+                    {
+                        var item = BambuJson2Model(field.FieldType, ((JObject)kv.Value).ToObject<JToken>());
                         field.SetValue(t, item);
                     }
                 }
