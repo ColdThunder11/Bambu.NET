@@ -2,7 +2,7 @@ namespace Bambu.NET.Models;
 
 public class UploadStatus
 {
-    public string Status;
-    public int Progress;
-    public string Message;
+    public string Status { get; set; }
+    public int Progress { get; set; }
+    public string Message { get; set; }
 }

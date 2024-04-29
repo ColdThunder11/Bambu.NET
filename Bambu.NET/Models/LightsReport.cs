@@ -2,6 +2,6 @@ namespace Bambu.NET.Models;
 
 public class LightsReport
 {
-    public string Node;
-    public string Mode;
+    public string Node { get; set; }
+    public string Mode { get; set; }
 }

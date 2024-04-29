@@ -83,47 +83,47 @@ public class FieldNameCast
         foreach (var kv in jDict)
         {
             var key = BambuJson2CsPublic(kv.Key);
-            var field = type.GetField(key);
-            if (field != null)
+            var prop = type.GetProperty(key);
+            if (prop != null)
             {
-                if (field.FieldType == typeof(string))
+                if (prop.PropertyType == typeof(string))
                 {
-                    field.SetValue(t, kv.Value.ToString());
+                    prop.SetValue(t, kv.Value.ToString());
                 }
-                else if (field.FieldType == typeof(bool))
+                else if (prop.PropertyType == typeof(bool))
                 {
-                    field.SetValue(t, bool.Parse(kv.Value.ToString()));
+                    prop.SetValue(t, bool.Parse(kv.Value.ToString()));
                 }
-                else if (field.FieldType == typeof(int))
+                else if (prop.PropertyType == typeof(int))
                 {
-                    field.SetValue(t, int.Parse(kv.Value.ToString()));
+                    prop.SetValue(t, int.Parse(kv.Value.ToString()));
                 }
-                else if (field.FieldType == typeof(long))
+                else if (prop.PropertyType == typeof(long))
                 {
-                    field.SetValue(t, long.Parse(kv.Value.ToString()));
+                    prop.SetValue(t, long.Parse(kv.Value.ToString()));
                 }
-                else if (field.FieldType == typeof(float))
+                else if (prop.PropertyType == typeof(float))
                 {
-                    field.SetValue(t, float.Parse(kv.Value.ToString()));
+                    prop.SetValue(t, float.Parse(kv.Value.ToString()));
                 }
-                else if (field.FieldType == typeof(double))
+                else if (prop.PropertyType == typeof(double))
                 {
-                    field.SetValue(t, float.Parse(kv.Value.ToString()));
+                    prop.SetValue(t, float.Parse(kv.Value.ToString()));
                 }
-                else if (field.FieldType.IsEnum)
+                else if (prop.PropertyType.IsEnum)
                 {
-                    var enmuParsed = Enum.Parse(field.FieldType, kv.Value.ToString());
-                    field.SetValue(t, enmuParsed);
+                    var enmuParsed = Enum.Parse(prop.PropertyType, kv.Value.ToString());
+                    prop.SetValue(t, enmuParsed);
                 }
                 else if (kv.Value.GetType() == typeof(JToken))
                 {
-                    var item = BambuJson2Model(field.FieldType, (JToken)kv.Value);
-                    field.SetValue(t, item);
+                    var item = BambuJson2Model(prop.PropertyType, (JToken)kv.Value);
+                    prop.SetValue(t, item);
                 }
                 else if (kv.Value.GetType() == typeof(JArray))
                 {
-                    var fieldType = field.FieldType;
-                    var interfaces = fieldType.GetInterfaces();
+                    var propertyType = prop.PropertyType;
+                    var interfaces = propertyType.GetInterfaces();
                     Type itemType = null;
                     foreach (var interf in interfaces)
                     {
@@ -136,26 +136,26 @@ public class FieldNameCast
                     var ja = (JArray)kv.Value;
                     if (itemType == null)
                     {
-                        throw new Exception($"Target type of {field.Name} not support");
+                        throw new Exception($"Target type of {prop.Name} not support");
                     }
-                    var classInst = Activator.CreateInstance(fieldType);
-                    var addMethod = fieldType.GetMethod("Add");
+                    var classInst = Activator.CreateInstance(propertyType);
+                    var addMethod = propertyType.GetMethod("Add");
                     foreach (var jt in ja)
                     {
                         var item = BambuJson2Model(itemType, jt);
                         addMethod.Invoke(classInst, new object[] { item });
                     }
-                    field.SetValue(t, classInst);
+                    prop.SetValue(t, classInst);
                 }
                 else
                 {
                     try
                     {
-                        field.SetValue(t, kv.Value);
+                        prop.SetValue(t, kv.Value);
                     }
                     catch
                     {
-                        throw new Exception($"Target type of {field.Name} not support");
+                        throw new Exception($"Target type of {prop.Name} not support");
                     }
                 }
             }
@@ -174,52 +174,52 @@ public class FieldNameCast
         foreach (var kv in jDict)
         {
             var key = BambuJson2CsPublic(kv.Key);
-            var field = typeof(T).GetField(key);
-            if (field != null)
+            var prop = typeof(T).GetProperty(key);
+            if (prop != null)
             {
-                if (field.FieldType == typeof(string))
+                if (prop.PropertyType == typeof(string))
                 {
-                    field.SetValue(t, kv.Value.ToString());
+                    prop.SetValue(t, kv.Value.ToString());
                 }
-                else if (field.FieldType == typeof(bool))
+                else if (prop.PropertyType == typeof(bool))
                 {
-                    field.SetValue(t, bool.Parse(kv.Value.ToString()));
+                    prop.SetValue(t, bool.Parse(kv.Value.ToString()));
                 }
-                else if (field.FieldType == typeof(int))
+                else if (prop.PropertyType == typeof(int))
                 {
-                    field.SetValue(t, int.Parse(kv.Value.ToString()));
+                    prop.SetValue(t, int.Parse(kv.Value.ToString()));
                 }
-                else if (field.FieldType == typeof(long))
+                else if (prop.PropertyType == typeof(long))
                 {
-                    field.SetValue(t, long.Parse(kv.Value.ToString()));
+                    prop.SetValue(t, long.Parse(kv.Value.ToString()));
                 }
-                else if (field.FieldType == typeof(float))
+                else if (prop.PropertyType == typeof(float))
                 {
-                    field.SetValue(t, float.Parse(kv.Value.ToString()));
+                    prop.SetValue(t, float.Parse(kv.Value.ToString()));
                 }
-                else if (field.FieldType == typeof(double))
+                else if (prop.PropertyType == typeof(double))
                 {
-                    field.SetValue(t, float.Parse(kv.Value.ToString()));
+                    prop.SetValue(t, float.Parse(kv.Value.ToString()));
                 }
-                else if (field.FieldType.IsEnum)
+                else if (prop.PropertyType.IsEnum)
                 {
-                    var enmuParsed = Enum.Parse(field.FieldType, kv.Value.ToString());
-                    field.SetValue(t, enmuParsed);
+                    var enmuParsed = Enum.Parse(prop.PropertyType, kv.Value.ToString());
+                    prop.SetValue(t, enmuParsed);
                 }
                 else if (kv.Value.GetType() == typeof(JToken))
                 {
-                    var item = BambuJson2Model(field.FieldType, (JToken)kv.Value);
-                    field.SetValue(t, item);
+                    var item = BambuJson2Model(prop.PropertyType, (JToken)kv.Value);
+                    prop.SetValue(t, item);
                 }
                 else if (kv.Value.GetType() == typeof(JObject))
                 {
-                    var item = BambuJson2Model(field.FieldType, ((JObject)kv.Value).ToObject<JToken>());
-                    field.SetValue(t, item);
+                    var item = BambuJson2Model(prop.PropertyType, ((JObject)kv.Value).ToObject<JToken>());
+                    prop.SetValue(t, item);
                 }
                 else if (kv.Value.GetType() == typeof(JArray))
                 {
-                    var fieldType = field.FieldType;
-                    var interfaces = fieldType.GetInterfaces();
+                    var propertyType = prop.PropertyType;
+                    var interfaces = propertyType.GetInterfaces();
                     Type itemType = null;
                     foreach (var interf in interfaces)
                     {
@@ -232,26 +232,26 @@ public class FieldNameCast
                     var ja = (JArray)kv.Value;
                     if (itemType == null)
                     {
-                        throw new Exception($"Target type of {field.Name} not support");
+                        throw new Exception($"Target type of {prop.Name} not support");
                     }
-                    var classInst = Activator.CreateInstance(fieldType);
-                    var addMethod = fieldType.GetMethod("Add");
+                    var classInst = Activator.CreateInstance(propertyType);
+                    var addMethod = propertyType.GetMethod("Add");
                     foreach (var jt in ja)
                     {
                         var item = BambuJson2Model(itemType, jt);
                         addMethod.Invoke(classInst, new object[] { item });
                     }
-                    field.SetValue(t, classInst);
+                    prop.SetValue(t, classInst);
                 }
                 else
                 {
                     try
                     {
-                        field.SetValue(t, kv.Value);
+                        prop.SetValue(t, kv.Value);
                     }
                     catch
                     {
-                        throw new Exception($"Target type of {field.Name} not support");
+                        throw new Exception($"Target type of {prop.Name} not support");
                     }
                 }
             }
@@ -267,63 +267,63 @@ public class FieldNameCast
         foreach (var kv in jDict)
         {
             var key = BambuJson2CsPublic(kv.Key);
-            var field = type.GetField(key);
-            if (field != null)
+            var prop = type.GetProperty(key);
+            if (prop != null)
             {
-                if (field.FieldType == typeof(string))
+                if (prop.PropertyType == typeof(string))
                 {
-                    field.SetValue(t, kv.Value.ToString());
+                    prop.SetValue(t, kv.Value.ToString());
                 }
-                else if (field.FieldType == typeof(bool))
+                else if (prop.PropertyType == typeof(bool))
                 {
-                    field.SetValue(t, bool.Parse(kv.Value.ToString()));
+                    prop.SetValue(t, bool.Parse(kv.Value.ToString()));
                 }
-                else if (field.FieldType == typeof(int))
+                else if (prop.PropertyType == typeof(int))
                 {
-                    field.SetValue(t, int.Parse(kv.Value.ToString()));
+                    prop.SetValue(t, int.Parse(kv.Value.ToString()));
                 }
-                else if (field.FieldType == typeof(long))
+                else if (prop.PropertyType == typeof(long))
                 {
-                    field.SetValue(t, long.Parse(kv.Value.ToString()));
+                    prop.SetValue(t, long.Parse(kv.Value.ToString()));
                 }
-                else if (field.FieldType == typeof(float))
+                else if (prop.PropertyType == typeof(float))
                 {
-                    field.SetValue(t, float.Parse(kv.Value.ToString()));
+                    prop.SetValue(t, float.Parse(kv.Value.ToString()));
                 }
-                else if (field.FieldType == typeof(double))
+                else if (prop.PropertyType == typeof(double))
                 {
-                    field.SetValue(t, float.Parse(kv.Value.ToString()));
+                    prop.SetValue(t, float.Parse(kv.Value.ToString()));
                 }
                 else if (kv.Value.GetType() == typeof(JToken))
                 {
-                    if (field.GetValue(t) != null)
+                    if (prop.GetValue(t) != null)
                     {
-                        var item = UpdateBambuJson2Model(field.FieldType, (JToken) kv.Value, field.GetValue(t));
-                        field.SetValue(t, item);
+                        var item = UpdateBambuJson2Model(prop.PropertyType, (JToken) kv.Value, prop.GetValue(t));
+                        prop.SetValue(t, item);
                     }
                     else
                     {
-                        var item = BambuJson2Model(field.FieldType, (JToken)kv.Value);
-                        field.SetValue(t, item);
+                        var item = BambuJson2Model(prop.PropertyType, (JToken)kv.Value);
+                        prop.SetValue(t, item);
                     }
                 }
                 else if (kv.Value.GetType() == typeof(JObject))
                 {
-                    if (field.GetValue(t) != null)
+                    if (prop.GetValue(t) != null)
                     {
-                        var item = UpdateBambuJson2Model(field.FieldType, ((JObject)kv.Value).ToObject<JToken>(), field.GetValue(t));
-                        field.SetValue(t, item);
+                        var item = UpdateBambuJson2Model(prop.PropertyType, ((JObject)kv.Value).ToObject<JToken>(), prop.GetValue(t));
+                        prop.SetValue(t, item);
                     }
                     else
                     {
-                        var item = BambuJson2Model(field.FieldType, ((JObject)kv.Value).ToObject<JToken>());
-                        field.SetValue(t, item);
+                        var item = BambuJson2Model(prop.PropertyType, ((JObject)kv.Value).ToObject<JToken>());
+                        prop.SetValue(t, item);
                     }
                 }
                 else if (kv.Value.GetType() == typeof(JArray))
                 {
-                    var fieldType = field.FieldType;
-                    var interfaces = fieldType.GetInterfaces();
+                    var propertyType = prop.PropertyType;
+                    var interfaces = propertyType.GetInterfaces();
                     Type itemType = null;
                     foreach (var interf in interfaces)
                     {
@@ -336,26 +336,26 @@ public class FieldNameCast
                     var ja = (JArray)kv.Value;
                     if (itemType == null)
                     {
-                        throw new Exception($"Target type of {field.Name} not support");
+                        throw new Exception($"Target type of {prop.Name} not support");
                     }
-                    var classInst = Activator.CreateInstance(fieldType);
-                    var addMethod = fieldType.GetMethod("Add");
+                    var classInst = Activator.CreateInstance(propertyType);
+                    var addMethod = propertyType.GetMethod("Add");
                     foreach (var jt in ja)
                     {
                         var item = BambuJson2Model(itemType, jt);
                         addMethod.Invoke(classInst, new object[] { item });
                     }
-                    field.SetValue(t, classInst);
+                    prop.SetValue(t, classInst);
                 }
                 else
                 {
                     try
                     {
-                        field.SetValue(t, kv.Value);
+                        prop.SetValue(t, kv.Value);
                     }
                     catch
                     {
-                        throw new Exception($"Target type of {field.Name} not support");
+                        throw new Exception($"Target type of {prop.Name} not support");
                     }
                 }
             }
@@ -370,63 +370,63 @@ public class FieldNameCast
         foreach (var kv in jDict)
         {
             var key = BambuJson2CsPublic(kv.Key);
-            var field = typeof(T).GetField(key);
-            if (field != null)
+            var prop = typeof(T).GetProperty(key);
+            if (prop != null)
             {
-                if (field.FieldType == typeof(string))
+                if (prop.PropertyType == typeof(string))
                 {
-                    field.SetValue(t, kv.Value.ToString());
+                    prop.SetValue(t, kv.Value.ToString());
                 }
-                else if (field.FieldType == typeof(bool))
+                else if (prop.PropertyType == typeof(bool))
                 {
-                    field.SetValue(t, bool.Parse(kv.Value.ToString()));
+                    prop.SetValue(t, bool.Parse(kv.Value.ToString()));
                 }
-                else if (field.FieldType == typeof(int))
+                else if (prop.PropertyType == typeof(int))
                 {
-                    field.SetValue(t, int.Parse(kv.Value.ToString()));
+                    prop.SetValue(t, int.Parse(kv.Value.ToString()));
                 }
-                else if (field.FieldType == typeof(long))
+                else if (prop.PropertyType == typeof(long))
                 {
-                    field.SetValue(t, long.Parse(kv.Value.ToString()));
+                    prop.SetValue(t, long.Parse(kv.Value.ToString()));
                 }
-                else if (field.FieldType == typeof(float))
+                else if (prop.PropertyType == typeof(float))
                 {
-                    field.SetValue(t, float.Parse(kv.Value.ToString()));
+                    prop.SetValue(t, float.Parse(kv.Value.ToString()));
                 }
-                else if (field.FieldType == typeof(double))
+                else if (prop.PropertyType == typeof(double))
                 {
-                    field.SetValue(t, float.Parse(kv.Value.ToString()));
+                    prop.SetValue(t, float.Parse(kv.Value.ToString()));
                 }
                 else if (kv.Value.GetType() == typeof(JToken))
                 {
-                    if (field.GetValue(t) != null)
+                    if (prop.GetValue(t) != null)
                     {
-                        var item = UpdateBambuJson2Model(field.FieldType, (JToken) kv.Value, field.GetValue(t));
-                        field.SetValue(t, item);
+                        var item = UpdateBambuJson2Model(prop.PropertyType, (JToken) kv.Value, prop.GetValue(t));
+                        prop.SetValue(t, item);
                     }
                     else
                     {
-                        var item = BambuJson2Model(field.FieldType, (JToken)kv.Value);
-                        field.SetValue(t, item);
+                        var item = BambuJson2Model(prop.PropertyType, (JToken)kv.Value);
+                        prop.SetValue(t, item);
                     }
                 }
                 else if (kv.Value.GetType() == typeof(JObject))
                 {
-                    if (field.GetValue(t) != null)
+                    if (prop.GetValue(t) != null)
                     {
-                        var item = UpdateBambuJson2Model(field.FieldType, ((JObject)kv.Value).ToObject<JToken>(), field.GetValue(t));
-                        field.SetValue(t, item);
+                        var item = UpdateBambuJson2Model(prop.PropertyType, ((JObject)kv.Value).ToObject<JToken>(), prop.GetValue(t));
+                        prop.SetValue(t, item);
                     }
                     else
                     {
-                        var item = BambuJson2Model(field.FieldType, ((JObject)kv.Value).ToObject<JToken>());
-                        field.SetValue(t, item);
+                        var item = BambuJson2Model(prop.PropertyType, ((JObject)kv.Value).ToObject<JToken>());
+                        prop.SetValue(t, item);
                     }
                 }
                 else if (kv.Value.GetType() == typeof(JArray))
                 {
-                    var fieldType = field.FieldType;
-                    var interfaces = fieldType.GetInterfaces();
+                    var propertyType = prop.PropertyType;
+                    var interfaces = propertyType.GetInterfaces();
                     Type itemType = null;
                     foreach (var interf in interfaces)
                     {
@@ -439,26 +439,26 @@ public class FieldNameCast
                     var ja = (JArray)kv.Value;
                     if (itemType == null)
                     {
-                        throw new Exception($"Target type of {field.Name} not support");
+                        throw new Exception($"Target type of {propertyType} not support");
                     }
-                    var classInst = Activator.CreateInstance(fieldType);
-                    var addMethod = fieldType.GetMethod("Add");
+                    var classInst = Activator.CreateInstance(propertyType);
+                    var addMethod = propertyType.GetMethod("Add");
                     foreach (var jt in ja)
                     {
                         var item = BambuJson2Model(itemType, jt);
                         addMethod.Invoke(classInst, new object[] { item });
                     }
-                    field.SetValue(t, classInst);
+                    prop.SetValue(t, classInst);
                 }
                 else
                 {
                     try
                     {
-                        field.SetValue(t, kv.Value);
+                        prop.SetValue(t, kv.Value);
                     }
                     catch
                     {
-                        throw new Exception($"Target type of {field.Name} not support");
+                        throw new Exception($"Target type of {prop.Name} not support");
                     }
                 }
             }

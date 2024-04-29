@@ -203,7 +203,7 @@ public class BambuMQTTClient : IDisposable
     /// </summary>
     /// <param name="amsId">Index of the AMS</param>
     /// <param name="trayId">Index of the tray</param>
-    /// <param name="trayColor">Formatted as hex RRGGBBAA (alpha is always FF)</param>
+    /// <param name="trayColor">Formatted as hex RRGGBBAA (alpha is always FF)(Transparent as 00000000)</param>
     /// <param name="nozzleTempMin">Minimum nozzle temp for filament (in C)</param>
     /// <param name="nozzleTempMax">Maximum nozzle temp for filament (in C)</param>
     /// <param name="trayType">Type of filament, such as "PLA" or "ABS"</param>

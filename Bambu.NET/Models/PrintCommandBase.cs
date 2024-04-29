@@ -2,6 +2,6 @@ namespace Bambu.NET.Models;
 
 public class PrintCommandBase
 {
-    public string SequenceId;
-    public string Command;
+    public string SequenceId { get; set; }
+    public string Command { get; set; }
 }
