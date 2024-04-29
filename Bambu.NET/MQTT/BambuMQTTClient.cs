@@ -207,7 +207,7 @@ public class BambuMQTTClient : IDisposable
     /// <param name="nozzleTempMin">Minimum nozzle temp for filament (in C)</param>
     /// <param name="nozzleTempMax">Maximum nozzle temp for filament (in C)</param>
     /// <param name="trayType">Type of filament, such as "PLA" or "ABS"</param>
-    public async Task AmsFilamentSetting(int amsId, int trayId, string trayColor, int nozzleTempMin, int nozzleTempMax, string trayType)
+    public async Task AmsFilamentSetting(int amsId, int trayId, string trayInfoIdx, string trayColor, int nozzleTempMin, int nozzleTempMax, string trayType)
     {
         var data = new AmsFilamentSettingData()
         {
@@ -215,7 +215,7 @@ public class BambuMQTTClient : IDisposable
             Command = "ams_filament_setting",
             AmsId = amsId,
             TrayId = trayId,
-            TrayInfoIdx = "GFL99",
+            TrayInfoIdx = trayInfoIdx,
             TrayColor = trayColor,
             NozzleTempMin = nozzleTempMin,
             NozzleTempMax = nozzleTempMax,
