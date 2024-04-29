@@ -149,6 +149,17 @@ public class FieldNameCast
                 }
                 else
                 {
+                    if (prop.PropertyType.IsEnum)
+                    {
+                        if (kv.Value.GetType() is int)
+                        {
+                            prop.SetValue(t, Enum.ToObject(prop.PropertyType, (int) kv.Value));
+                        }
+                        else
+                        {
+                            prop.SetValue(t, Enum.Parse(prop.PropertyType, kv.Value.ToString()));
+                        }
+                    }
                     try
                     {
                         prop.SetValue(t, kv.Value);
@@ -245,6 +256,17 @@ public class FieldNameCast
                 }
                 else
                 {
+                    if (prop.PropertyType.IsEnum)
+                    {
+                        if (kv.Value.GetType() is int)
+                        {
+                            prop.SetValue(t, Enum.ToObject(prop.PropertyType, (int) kv.Value));
+                        }
+                        else
+                        {
+                            prop.SetValue(t, Enum.Parse(prop.PropertyType, kv.Value.ToString()));
+                        }
+                    }
                     try
                     {
                         prop.SetValue(t, kv.Value);
@@ -349,6 +371,17 @@ public class FieldNameCast
                 }
                 else
                 {
+                    if (prop.PropertyType.IsEnum)
+                    {
+                        if (kv.Value.GetType() is int)
+                        {
+                            prop.SetValue(t, Enum.ToObject(prop.PropertyType, (int) kv.Value));
+                        }
+                        else
+                        {
+                            prop.SetValue(t, Enum.Parse(prop.PropertyType, kv.Value.ToString()));
+                        }
+                    }
                     try
                     {
                         prop.SetValue(t, kv.Value);
@@ -452,6 +485,17 @@ public class FieldNameCast
                 }
                 else
                 {
+                    if (prop.PropertyType.IsEnum)
+                    {
+                        if (kv.Value.GetType() is int)
+                        {
+                            prop.SetValue(t, Enum.ToObject(prop.PropertyType, (int) kv.Value));
+                        }
+                        else
+                        {
+                            prop.SetValue(t, Enum.Parse(prop.PropertyType, kv.Value.ToString()));
+                        }
+                    }
                     try
                     {
                         prop.SetValue(t, kv.Value);
