@@ -21,5 +21,5 @@ public class VtTray
     public string TrayUuid { get; set; }
     public int Remain { get; set; }
     public double K { get; set; }
-    public int N { get; set; }
+    public double N { get; set; }
 }

@@ -20,7 +20,11 @@ var mqttClient = bambu.GetMqttClient(serial);
 if (mqttClient.Connected)
 {
     //Turn off camera light
-    await mqttClient.CameraLightOff();
+    //await mqttClient.CameraLightOff();
+    //TrayInfoIdx GFG99 for Generic PETG and GFL99 for Generic PLA
+    //await mqttClient.AmsFilamentSetting(0, 2, "GFG99", "00000000", 220, 270, "PETG");
+    //await mqttClient.AmsFilamentSetting(0, 3, "GFL99", "00000000", 190, 240, "PLA");
+    //await mqttClient.ExtrusionCaliSet(0, 0.04);
 }
 
 Console.ReadLine();

@@ -197,33 +197,83 @@ public class BambuMQTTClient : IDisposable
         var dataJson = JsonConvert.SerializeObject(data, _snakeCaseNameSetting);
         await Publish($"{{\"print\": {dataJson}}}");
     }
+
+    public async Task AmsFilamentSetting(int amsId, int trayId, AMSTrayInfoIdx trayInfoIdx, string trayColor, int nozzleTempMin,
+        int nozzleTempMax)
+    {
+        var idxStr = trayInfoIdx.GetTrayInfoIdxAndType();
+        await AmsFilamentSetting(amsId, trayId, idxStr.Item1, trayColor, nozzleTempMin, nozzleTempMax, idxStr.Item2);
+    }
     
     /// <summary>
     /// Changes the setting of the given filament in the given AMS.
     /// </summary>
-    /// <param name="amsId">Index of the AMS</param>
+    /// <param name="amsId">Index of the AMS, 255 for external filament</param>
     /// <param name="trayId">Index of the tray</param>
     /// <param name="trayColor">Formatted as hex RRGGBBAA (alpha is always FF)(Transparent as 00000000)</param>
     /// <param name="nozzleTempMin">Minimum nozzle temp for filament (in C)</param>
     /// <param name="nozzleTempMax">Maximum nozzle temp for filament (in C)</param>
     /// <param name="trayType">Type of filament, such as "PLA" or "ABS"</param>
-    public async Task AmsFilamentSetting(int amsId, int trayId, string trayInfoIdx, string trayColor, int nozzleTempMin, int nozzleTempMax, string trayType)
+    public async Task AmsFilamentSetting(int amsId, int trayId, string trayInfoIdx, string trayColor, int nozzleTempMin,
+        int nozzleTempMax, string trayType)
     {
-        var data = new AmsFilamentSettingData()
+        if (amsId == 255)
+        {
+            // TrayId is not needed in external filament
+            var data = new AmsFilamentSettingData()
+            {
+                SequenceId = "0",
+                Command = "ams_filament_setting",
+                AmsId = amsId,
+                TrayInfoIdx = trayInfoIdx,
+                TrayColor = trayColor,
+                NozzleTempMin = nozzleTempMin,
+                NozzleTempMax = nozzleTempMax,
+                TrayType = trayType
+            };
+            var dataJson = JsonConvert.SerializeObject(data, _snakeCaseNameSetting);
+            await Publish($"{{\"print\": {dataJson}}}");
+        }
+        else
+        {
+            var data = new AmsFilamentSettingData()
+            {
+                SequenceId = "0",
+                Command = "ams_filament_setting",
+                AmsId = amsId,
+                TrayId = trayId,
+                TrayInfoIdx = trayInfoIdx,
+                TrayColor = trayColor,
+                NozzleTempMin = nozzleTempMin,
+                NozzleTempMax = nozzleTempMax,
+                TrayType = trayType
+            };
+            var dataJson = JsonConvert.SerializeObject(data, _snakeCaseNameSetting);
+            await Publish($"{{\"print\": {dataJson}}}");
+        }
+
+    }
+    
+    /// <summary>
+    /// Changes the setting of the given AMS tray's K value.
+    /// </summary>
+    /// <param name="trayId"></param>
+    /// <param name="kValue"></param>
+    /// <param name="nCoef"></param>
+    public async Task ExtrusionCaliSet(int trayId, double kValue, double nCoef = 1.4) //No AMS id found in resp message on my A1, need another one to observe. nCoef seems always 1.4 in my A1. More info needed.
+    {
+        var data = new ExtrusionCaliSetData()
         {
             SequenceId = "0",
-            Command = "ams_filament_setting",
-            AmsId = amsId,
+            Command = "extrusion_cali_set",
             TrayId = trayId,
-            TrayInfoIdx = trayInfoIdx,
-            TrayColor = trayColor,
-            NozzleTempMin = nozzleTempMin,
-            NozzleTempMax = nozzleTempMax,
-            TrayType = trayType
+            KValue = kValue,
+            NCoef = nCoef,
         };
         var dataJson = JsonConvert.SerializeObject(data, _snakeCaseNameSetting);
         await Publish($"{{\"print\": {dataJson}}}");
     }
+    
     /// <summary>
     /// Set print speed to one of the 4 presets.
     /// </summary>
@@ -231,6 +281,14 @@ public class BambuMQTTClient : IDisposable
     public async Task SetPrintSpeed(int speed)
     {
         await Publish($"{{\"print\": {{\"sequence_id\": \"0\", \"command\": \"print_speed\", \"param\": \"{speed}\"}}}}");
+    }
+
+    /// <summary>
+    /// Use G28 Gcode to home all axis
+    /// </summary>
+    public async Task AutoHome()
+    {
+        await SendGcode("G28 \n", _userName);
     }
     
     /// <summary>

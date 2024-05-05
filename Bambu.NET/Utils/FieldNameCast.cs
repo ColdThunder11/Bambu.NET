@@ -160,13 +160,16 @@ public class FieldNameCast
                             prop.SetValue(t, Enum.Parse(prop.PropertyType, kv.Value.ToString()));
                         }
                     }
-                    try
+                    else
                     {
-                        prop.SetValue(t, kv.Value);
-                    }
-                    catch
-                    {
-                        throw new Exception($"Target type of {prop.Name} not support");
+                        try
+                        {
+                            prop.SetValue(t, kv.Value);
+                        }
+                        catch
+                        {
+                            throw new Exception($"Target type of {prop.Name} not support");
+                        }
                     }
                 }
             }
@@ -267,13 +270,16 @@ public class FieldNameCast
                             prop.SetValue(t, Enum.Parse(prop.PropertyType, kv.Value.ToString()));
                         }
                     }
-                    try
+                    else
                     {
-                        prop.SetValue(t, kv.Value);
-                    }
-                    catch
-                    {
-                        throw new Exception($"Target type of {prop.Name} not support");
+                        try
+                        {
+                            prop.SetValue(t, kv.Value);
+                        }
+                        catch
+                        {
+                            throw new Exception($"Target type of {prop.Name} not support");
+                        }
                     }
                 }
             }
@@ -382,13 +388,16 @@ public class FieldNameCast
                             prop.SetValue(t, Enum.Parse(prop.PropertyType, kv.Value.ToString()));
                         }
                     }
-                    try
+                    else
                     {
-                        prop.SetValue(t, kv.Value);
-                    }
-                    catch
-                    {
-                        throw new Exception($"Target type of {prop.Name} not support");
+                        try
+                        {
+                            prop.SetValue(t, kv.Value);
+                        }
+                        catch
+                        {
+                            throw new Exception($"Target type of {prop.Name} not support");
+                        }
                     }
                 }
             }
@@ -496,13 +505,16 @@ public class FieldNameCast
                             prop.SetValue(t, Enum.Parse(prop.PropertyType, kv.Value.ToString()));
                         }
                     }
-                    try
+                    else
                     {
-                        prop.SetValue(t, kv.Value);
-                    }
-                    catch
-                    {
-                        throw new Exception($"Target type of {prop.Name} not support");
+                        try
+                        {
+                            prop.SetValue(t, kv.Value);
+                        }
+                        catch
+                        {
+                            throw new Exception($"Target type of {prop.Name} not support");
+                        }
                     }
                 }
             }

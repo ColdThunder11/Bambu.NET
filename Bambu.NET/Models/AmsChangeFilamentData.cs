@@ -1,6 +1,6 @@
 namespace Bambu.NET.Models;
 
-public class AmsChangeFilamentData: PrintCommandBase
+public class AmsChangeFilamentData : PrintCommandBase
 {
     public int Target { get; set; }
     public int CurrTemp { get; set; }
